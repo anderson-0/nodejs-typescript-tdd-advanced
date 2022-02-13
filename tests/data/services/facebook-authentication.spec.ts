@@ -1,5 +1,5 @@
 import { ILoadFacebookUserApi } from '@/data/contracts/apis';
-import { ILoadUserAccountRepository } from '@/data/contracts/repositories/user-account';
+import { ICreateFacebookAccountRepository, ILoadUserAccountRepository } from '@/data/contracts/repositories/user-account';
 import { FacebookAuthenticationService } from '@/data/service/facebook-authentication';
 import { AuthenticationError } from '@/domain/errors';
 
@@ -8,6 +8,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 describe('FacebookAuthenticationService', () => {
   let loadFacebookUserApi: MockProxy<ILoadFacebookUserApi>;
   let loadUserAccountRepo: MockProxy<ILoadUserAccountRepository>;
+  let createFacebookAccountRepo: MockProxy<ICreateFacebookAccountRepository>;
   let sut: FacebookAuthenticationService;
   const token = 'any_token';
   beforeEach(() => {
@@ -19,9 +20,11 @@ describe('FacebookAuthenticationService', () => {
     });
 
     loadUserAccountRepo = mock<ILoadUserAccountRepository>();
+    createFacebookAccountRepo = mock<ICreateFacebookAccountRepository>();
     sut = new FacebookAuthenticationService(
       loadFacebookUserApi,
-      loadUserAccountRepo
+      loadUserAccountRepo,
+      createFacebookAccountRepo
     );
   })
   it('Should call LoadFacebookUserApi with correct params', async () => {
@@ -44,5 +47,18 @@ describe('FacebookAuthenticationService', () => {
 
     expect(loadUserAccountRepo.load).toHaveBeenCalledWith({ email: 'any_email@mail.com' });
     expect(loadUserAccountRepo.load).toHaveBeenCalledTimes(1);
+  })
+
+  it('Should call CreateUserAccountRepo when LoadUserAccountRepo returns undefined', async () => {
+    loadUserAccountRepo.load.mockResolvedValueOnce(undefined);
+
+    await sut.perform({ token })
+
+    expect(createFacebookAccountRepo.createFromFacebook).toHaveBeenCalledWith({
+      name: 'any_name',
+      email: 'any_email@mail.com',
+      facebookId: 'any_facebook_id'
+    });
+    expect(createFacebookAccountRepo.createFromFacebook).toHaveBeenCalledTimes(1);
   })
 });
