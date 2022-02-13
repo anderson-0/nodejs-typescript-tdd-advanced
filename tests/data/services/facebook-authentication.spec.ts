@@ -46,7 +46,7 @@ describe('FacebookAuthenticationService', () => {
     expect(userAccountRepository.load).toHaveBeenCalledTimes(1);
   })
 
-  it('Should call CreateUserAccountRepo when LoadUserAccountRepo returns undefined', async () => {
+  it('Should call CreateFacebookAccountRepo when LoadUserAccountRepo returns undefined', async () => {
     userAccountRepository.load.mockResolvedValueOnce(undefined);
 
     await sut.perform({ token })
