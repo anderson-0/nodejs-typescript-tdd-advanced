@@ -1,3 +1,4 @@
+import { ILoadFacebookUserApi } from '@/data/contracts/apis';
 import { AuthenticationError } from '@/domain/errors';
 import { IFacebookAuthentication } from '@/domain/features';
 
@@ -12,22 +13,10 @@ class FacebookAuthenticationService {
   }
 }
 
-interface ILoadFacebookUserApi {
-  loadUser: (params: ILoadFacebookUser.Params) => Promise<void>
-}
-
-namespace ILoadFacebookUser {
-  export type Params = {
-    token: string
-  }
-
-  export type Result = undefined
-}
-
 class LoadFacebookUserApiSpy implements ILoadFacebookUserApi {
   token?: string;
   result = undefined;
-  async loadUser (params: ILoadFacebookUser.Params): Promise<ILoadFacebookUser.Result> {
+  async loadUser (params: ILoadFacebookUserApi.Params): Promise<ILoadFacebookUserApi.Result> {
     this.token = params.token;
     return this.result;
   }
