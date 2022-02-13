@@ -1,0 +1,14 @@
+import { AuthenticationError } from '@/domain/errors';
+import { AccessToken } from '@/domain/models/access-token';
+
+export interface IFacebookAuthentication {
+  perform: (params: IFacebookAuthentication.Params) => Promise<IFacebookAuthentication.Result>
+}
+
+export namespace IFacebookAuthentication {
+  export type Params = {
+    accessToken: string
+  }
+
+  export type Result = AccessToken | AuthenticationError
+}
