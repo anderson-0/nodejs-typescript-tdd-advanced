@@ -7,7 +7,7 @@ export interface IFacebookAuthentication {
 
 export namespace IFacebookAuthentication {
   export type Params = {
-    accessToken: string
+    token: string
   }
 
   export type Result = AccessToken | AuthenticationError
