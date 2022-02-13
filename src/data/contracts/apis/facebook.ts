@@ -1,5 +1,5 @@
 export interface ILoadFacebookUserApi {
-  loadUser: (params: ILoadFacebookUserApi.Params) => Promise<void>
+  loadUser: (params: ILoadFacebookUserApi.Params) => Promise<ILoadFacebookUserApi.Result>
 }
 
 export namespace ILoadFacebookUserApi {
@@ -7,5 +7,9 @@ export namespace ILoadFacebookUserApi {
     token: string
   }
 
-  export type Result = undefined
+  export type Result = undefined | {
+    facebookId: string
+    name: string
+    email: string
+  }
 }
