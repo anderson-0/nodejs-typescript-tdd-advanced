@@ -1,5 +1,5 @@
 import { ILoadFacebookUserApi } from '@/data/contracts/apis';
-import { ICreateFacebookAccountRepository, ILoadUserAccountRepository } from '@/data/contracts/repositories/user-account';
+import { ICreateFacebookAccountRepository, ILoadUserAccountRepository, IUpdateFacebookAccountRepository } from '@/data/contracts/repositories/user-account';
 import { FacebookAuthenticationService } from '@/data/service/facebook-authentication';
 import { AuthenticationError } from '@/domain/errors';
 
@@ -7,7 +7,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 
 describe('FacebookAuthenticationService', () => {
   let facebookApi: MockProxy<ILoadFacebookUserApi>;
-  let userAccountRepository: MockProxy<ILoadUserAccountRepository & ICreateFacebookAccountRepository>;
+  let userAccountRepository: MockProxy<ILoadUserAccountRepository & ICreateFacebookAccountRepository & IUpdateFacebookAccountRepository>;
   let sut: FacebookAuthenticationService;
   const token = 'any_token';
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe('FacebookAuthenticationService', () => {
       facebookId: 'any_facebook_id'
     });
 
-    userAccountRepository = mock<ILoadUserAccountRepository & ICreateFacebookAccountRepository>();
+    userAccountRepository = mock();
     sut = new FacebookAuthenticationService(
       facebookApi,
       userAccountRepository
@@ -57,5 +57,21 @@ describe('FacebookAuthenticationService', () => {
       facebookId: 'any_facebook_id'
     });
     expect(userAccountRepository.createFromFacebook).toHaveBeenCalledTimes(1);
+  })
+
+  it('Should call UpdateFacebookAccountRepo when LoadUserAccountRepo returns data', async () => {
+    userAccountRepository.load.mockResolvedValueOnce({
+      id: 'any_id',
+      name: 'any_name'
+    });
+
+    await sut.perform({ token })
+
+    expect(userAccountRepository.updateWithFacebook).toHaveBeenCalledWith({
+      id: 'any_id',
+      name: 'any_name',
+      facebookId: 'any_facebook_id'
+    });
+    expect(userAccountRepository.updateWithFacebook).toHaveBeenCalledTimes(1);
   })
 });
