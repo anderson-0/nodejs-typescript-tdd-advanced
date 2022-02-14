@@ -7,15 +7,7 @@ import { FacebookAccount } from '@/domain/models';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { mocked } from 'jest-mock';
 
-jest.mock('@/domain/models/facebook-account-model', () => {
-  return {
-    FacebookAccount: jest.fn().mockImplementation(() => {
-      return {
-
-      }
-    })
-  }
-});
+jest.mock('@/domain/models/facebook-account-model');
 
 describe('FacebookAuthenticationService', () => {
   let facebookApi: MockProxy<ILoadFacebookUserApi>;
