@@ -12,7 +12,7 @@ export class FacebookAuthenticationService implements IFacebookAuthentication {
     private readonly crypto: ITokenGenerator
   ) {}
 
-  async perform (params: IFacebookAuthentication.Params): Promise<AuthenticationError> {
+  async perform (params: IFacebookAuthentication.Params): Promise<IFacebookAuthentication.Result> {
     const facebookData = await this.facebookApi.loadUser({ token: params.token });
     if (facebookData !== undefined) {
       const accountData = await this.userAccountRepository.load({ email: facebookData.email });
@@ -20,10 +20,11 @@ export class FacebookAuthenticationService implements IFacebookAuthentication {
       const user = new FacebookAccount(facebookData, accountData);
 
       const { id } = await this.userAccountRepository.saveWithFacebook(user);
-      await this.crypto.generateToken({
+      const token = await this.crypto.generateToken({
         key: id,
         expirationInMs: AccessToken.expirationInMs
       });
+      return new AccessToken(token);
     }
 
     return new AuthenticationError();
