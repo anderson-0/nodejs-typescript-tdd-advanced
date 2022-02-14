@@ -1,4 +1,7 @@
+/* eslint-disable prefer-const */
+
 import { ILoadFacebookUserApi } from '@/data/contracts/apis';
+import { ITokenGenerator } from '@/data/contracts/crypto';
 import { ISaveFacebookAccountRepository, ILoadUserAccountRepository } from '@/data/contracts/repositories/user-account-repository';
 import { FacebookAuthenticationService } from '@/data/service';
 import { AuthenticationError } from '@/domain/errors';
@@ -6,7 +9,6 @@ import { AccessToken, FacebookAccount } from '@/domain/models';
 
 import { mock, MockProxy } from 'jest-mock-extended';
 import { mocked } from 'jest-mock';
-import { ITokenGenerator } from '@/data/contracts/crypto';
 
 jest.mock('@/domain/models/facebook-account-model');
 
@@ -16,10 +18,11 @@ describe('FacebookAuthenticationService', () => {
   let userAccountRepository: MockProxy<ILoadUserAccountRepository & ISaveFacebookAccountRepository>;
   let sut: FacebookAuthenticationService;
 
-  const token = 'any_token';
+  let token: string;
 
-  beforeEach(() => {
-    facebookApi = mock<ILoadFacebookUserApi>();
+  beforeAll(() => {
+    token = 'any_token';
+    facebookApi = mock();
     facebookApi.loadUser.mockResolvedValue({
       name: 'any_fb_name',
       email: 'any_email@mail.com',
@@ -27,16 +30,18 @@ describe('FacebookAuthenticationService', () => {
     });
 
     userAccountRepository = mock();
-    userAccountRepository.load.mockResolvedValue(undefined);
-    userAccountRepository.saveWithFacebook.mockResolvedValueOnce({ id: 'any_account_id' })
+    userAccountRepository.load.mockResolvedValue(undefined)
+    userAccountRepository.saveWithFacebook.mockResolvedValue({ id: 'any_account_id' })
     crypto = mock();
     crypto.generateToken.mockResolvedValue('any_generated_token');
+  });
 
+  beforeEach(() => {
     sut = new FacebookAuthenticationService(
       facebookApi,
       userAccountRepository,
       crypto
-    );
+    )
   })
   it('Should call LoadFacebookUserApi with correct params', async () => {
     await sut.perform({ token })
