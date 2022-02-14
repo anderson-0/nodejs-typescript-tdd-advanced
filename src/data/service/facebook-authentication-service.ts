@@ -3,11 +3,13 @@ import { IFacebookAuthentication } from '@/domain/features';
 import { ILoadFacebookUserApi } from '@/data/contracts/apis';
 import { ILoadUserAccountRepository, ISaveFacebookAccountRepository } from '@/data/contracts/repositories';
 import { FacebookAccount } from '@/domain/models';
+import { ITokenGenerator } from '../contracts/crypto';
 
 export class FacebookAuthenticationService {
   constructor (
     private readonly facebookApi: ILoadFacebookUserApi,
-    private readonly userAccountRepository: ILoadUserAccountRepository & ISaveFacebookAccountRepository
+    private readonly userAccountRepository: ILoadUserAccountRepository & ISaveFacebookAccountRepository,
+    private readonly crypto: ITokenGenerator
   ) {}
 
   async perform (params: IFacebookAuthentication.Params): Promise<AuthenticationError> {
@@ -17,7 +19,8 @@ export class FacebookAuthenticationService {
 
       const user = new FacebookAccount(facebookData, accountData);
 
-      await this.userAccountRepository.saveWithFacebook(user);
+      const { id } = await this.userAccountRepository.saveWithFacebook(user);
+      await this.crypto.generateToken({ key: id })
     }
 
     return new AuthenticationError();
