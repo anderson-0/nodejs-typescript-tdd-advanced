@@ -2,7 +2,7 @@ import { AuthenticationError } from '@/domain/errors';
 import { IFacebookAuthentication } from '@/domain/features';
 import { ILoadFacebookUserApi } from '@/data/contracts/apis';
 import { ILoadUserAccountRepository, ISaveFacebookAccountRepository } from '@/data/contracts/repositories';
-import { FacebookAccount } from '@/domain/models/facebook-account';
+import { FacebookAccount } from '@/domain/models';
 
 export class FacebookAuthenticationService {
   constructor (

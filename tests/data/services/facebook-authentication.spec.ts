@@ -1,13 +1,13 @@
 import { ILoadFacebookUserApi } from '@/data/contracts/apis';
-import { ISaveFacebookAccountRepository, ILoadUserAccountRepository } from '@/data/contracts/repositories/user-account';
-import { FacebookAuthenticationService } from '@/data/service/facebook-authentication';
+import { ISaveFacebookAccountRepository, ILoadUserAccountRepository } from '@/data/contracts/repositories/user-account-repository';
+import { FacebookAuthenticationService } from '@/data/service';
 import { AuthenticationError } from '@/domain/errors';
 import { FacebookAccount } from '@/domain/models';
 
 import { mock, MockProxy } from 'jest-mock-extended';
 import { mocked } from 'ts-jest/utils';
 
-jest.mock('@/domain/models/facebook-account', () => {
+jest.mock('@/domain/models/facebook-account-model', () => {
   return {
     FacebookAccount: jest.fn().mockImplementation(() => {
       return {
@@ -32,6 +32,7 @@ describe('FacebookAuthenticationService', () => {
 
     userAccountRepository = mock();
     userAccountRepository.load.mockResolvedValue(undefined);
+    userAccountRepository.saveWithFacebook.mockResolvedValue({ id: 'any_account_id' });
 
     sut = new FacebookAuthenticationService(
       facebookApi,
@@ -61,6 +62,17 @@ describe('FacebookAuthenticationService', () => {
   })
 
   it('Should call SaveFacebookAccountRepository with FacebookAccount', async () => {
+    const FacebookAccountStub = jest.fn().mockImplementation(() => ({
+      any: 'any'
+    }));
+    mocked(FacebookAccount).mockImplementation(FacebookAccountStub);
+    await sut.perform({ token })
+
+    expect(userAccountRepository.saveWithFacebook).toHaveBeenCalledWith({ any: 'any' });
+    expect(userAccountRepository.saveWithFacebook).toHaveBeenCalledTimes(1);
+  });
+
+  it('Should call TokenGenerator with with correct params', async () => {
     const FacebookAccountStub = jest.fn().mockImplementation(() => ({
       any: 'any'
     }));
