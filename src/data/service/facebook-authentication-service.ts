@@ -5,7 +5,7 @@ import { ILoadUserAccountRepository, ISaveFacebookAccountRepository } from '@/da
 import { AccessToken, FacebookAccount } from '@/domain/models';
 import { ITokenGenerator } from '../contracts/crypto';
 
-export class FacebookAuthenticationService {
+export class FacebookAuthenticationService implements IFacebookAuthentication {
   constructor (
     private readonly facebookApi: ILoadFacebookUserApi,
     private readonly userAccountRepository: ILoadUserAccountRepository & ISaveFacebookAccountRepository,
