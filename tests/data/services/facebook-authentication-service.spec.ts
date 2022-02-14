@@ -84,4 +84,11 @@ describe('FacebookAuthenticationService', () => {
 
     expect(authResult).toEqual(new AccessToken('any_generated_token'));
   });
+
+  it('Should rethrow if LoadFacebookUserApi throws', async () => {
+    facebookApi.loadUser.mockRejectedValueOnce(new Error('facebook_error'));
+    const promise = sut.perform({ token })
+
+    await expect(promise).rejects.toThrow(new Error('facebook_error'));
+  });
 });
