@@ -10,6 +10,7 @@ export namespace ILoadUserAccountRepository {
   export type Result = undefined | {
     id: string
     name?: string
+    email: string
   }
 }
 

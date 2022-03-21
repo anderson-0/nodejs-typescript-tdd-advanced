@@ -37,6 +37,7 @@ describe('FacebookAuthenticationService', () => {
   });
 
   beforeEach(() => {
+    // clear all mocks is configured in jest.config.js
     sut = new FacebookAuthenticationService(
       facebookApi,
       userAccountRepository,
@@ -74,7 +75,7 @@ describe('FacebookAuthenticationService', () => {
     expect(userAccountRepository.saveWithFacebook).toHaveBeenCalledTimes(1);
   });
 
-  it('Should call TokenGenerator with with correct params', async () => {
+  it('Should call TokenGenerator with correct params', async () => {
     await sut.perform({ token })
 
     expect(crypto.generateToken).toHaveBeenCalledWith({
