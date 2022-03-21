@@ -1,6 +1,22 @@
 import { ILoadFacebookUserApi } from '@/data/contracts/apis';
 import { IHttpGetClient } from '../http';
 
+type AppToken = {
+  access_token: string
+}
+
+type DebugToken = {
+  data: {
+    user_id: string
+  }
+}
+
+type UserInfo = {
+  id: string
+  name: string
+  email: string
+}
+
 export class FacebookApi implements ILoadFacebookUserApi {
   private readonly baseUrl = 'https://graph.facebook.com'
   constructor (
@@ -19,7 +35,7 @@ export class FacebookApi implements ILoadFacebookUserApi {
     }
   }
 
-  private async getAppToken (): Promise<any> {
+  private async getAppToken (): Promise<AppToken> {
     return this.httpClient.get({
       url: `${this.baseUrl}/oauth/access_token`,
       params: {
@@ -30,7 +46,7 @@ export class FacebookApi implements ILoadFacebookUserApi {
     });
   }
 
-  private async getDebugToken (clientToken: string): Promise<any> {
+  private async getDebugToken (clientToken: string): Promise<DebugToken> {
     const appToken = await this.getAppToken();
     return this.httpClient.get({
       url: `${this.baseUrl}/oauth/debug_token`,
@@ -41,10 +57,9 @@ export class FacebookApi implements ILoadFacebookUserApi {
     });
   }
 
-  private async getUserInfo (clientToken: string): Promise<any> {
+  private async getUserInfo (clientToken: string): Promise<UserInfo> {
     const debugToken = await this.getDebugToken(clientToken);
     return this.httpClient.get({
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       url: `${this.baseUrl}/${debugToken.data.user_id}`,
       params: {
         fields: ['id', 'name', 'email'].join(','),
