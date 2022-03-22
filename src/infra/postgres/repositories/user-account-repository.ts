@@ -1,6 +1,6 @@
 import { getRepository } from 'typeorm';
 
-import { ILoadUserAccountRepository } from '@/data/contracts/repositories';
+import { ILoadUserAccountRepository, ISaveFacebookAccountRepository } from '@/data/contracts/repositories';
 import { PgUser } from '@/infra/postgres/entities';
 
 export class PostgresUserAccountRepository {
@@ -18,6 +18,25 @@ export class PostgresUserAccountRepository {
         name: pgUser.name ?? undefined,
         email: pgUser.email
       };
+    }
+
+    return undefined;
+  }
+
+  async saveWithFacebook (params: ISaveFacebookAccountRepository.Params): Promise<void> {
+    const pgUserRepo = getRepository(PgUser);
+    if (params.id === undefined) {
+      await pgUserRepo.save({
+        email: params.email,
+        name: params.name,
+        facebookId: params.facebookId
+      })
+    } else {
+      // updates should never change the email even if it is different
+      await pgUserRepo.update(params.id, {
+        name: params.name,
+        facebookId: params.facebookId
+      });
     }
   }
 }
