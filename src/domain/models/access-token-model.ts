@@ -3,7 +3,7 @@ export class AccessToken {
     return 30 * 60 * 1000;
   }
 
-  constructor (private readonly value: string) {
+  constructor (readonly value: string) {
 
   }
 }
