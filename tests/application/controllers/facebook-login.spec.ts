@@ -1,10 +1,16 @@
+import { IFacebookAuthentication } from '@/domain/features';
+import { mock, MockProxy } from 'jest-mock-extended';
+
 type HttpResponse = {
   statusCode: number
   data: any
 }
 
 class FacebookLoginController {
+  constructor (private readonly facebookAuthentication: IFacebookAuthentication) {}
+
   async handle (httpRequest: any): Promise<HttpResponse> {
+    await this.facebookAuthentication.perform({ token: httpRequest.token });
     return {
       statusCode: 400,
       data: new Error('Token is required')
@@ -13,9 +19,17 @@ class FacebookLoginController {
 }
 
 describe('Facebook Login Controller', () => {
-  it('should return 400 if token is empty', async () => {
-    const sut = new FacebookLoginController();
+  let facebookAuth: MockProxy<IFacebookAuthentication>;
+  let sut: FacebookLoginController;
+  beforeAll(() => {
+    facebookAuth = mock<IFacebookAuthentication>();
+  });
 
+  beforeEach(() => {
+    sut = new FacebookLoginController(facebookAuth);
+  });
+
+  it('should return 400 if token is empty', async () => {
     const response = await sut.handle({ token: '' });
 
     expect(response).toEqual({
@@ -25,8 +39,6 @@ describe('Facebook Login Controller', () => {
   });
 
   it('should return 400 if token is null', async () => {
-    const sut = new FacebookLoginController();
-
     const response = await sut.handle({ token: null });
 
     expect(response).toEqual({
@@ -36,13 +48,18 @@ describe('Facebook Login Controller', () => {
   });
 
   it('should return 400 if token is undefined', async () => {
-    const sut = new FacebookLoginController();
-
     const response = await sut.handle({ token: undefined });
 
     expect(response).toEqual({
       statusCode: 400,
       data: new Error('Token is required')
     })
+  });
+
+  it('should call FacebookLoginController with correct params', async () => {
+    await sut.handle({ token: 'any_token' });
+
+    expect(facebookAuth.perform).toHaveBeenCalledWith({ token: 'any_token' });
+    expect(facebookAuth.perform).toHaveBeenCalledTimes(1);
   });
 });
