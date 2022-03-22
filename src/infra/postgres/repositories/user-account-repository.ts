@@ -3,7 +3,7 @@ import { getRepository } from 'typeorm';
 import { ILoadUserAccountRepository, ISaveFacebookAccountRepository } from '@/data/contracts/repositories';
 import { PgUser } from '@/infra/postgres/entities';
 
-export class PostgresUserAccountRepository {
+export class PostgresUserAccountRepository implements ISaveFacebookAccountRepository {
   private readonly pgUserRepo = getRepository(PgUser);
 
   async load (params: ILoadUserAccountRepository.Params): Promise<ILoadUserAccountRepository.Result> {
