@@ -1,4 +1,4 @@
-import { AuthenticationError } from '@/domain/errors';
+import { AuthenticationError, ServerError } from '@/domain/errors';
 import { IFacebookAuthentication } from '@/domain/features';
 import { AccessToken } from '@/domain/models';
 import { mock, MockProxy } from 'jest-mock-extended';
@@ -12,25 +12,32 @@ class FacebookLoginController {
   constructor (private readonly facebookAuthentication: IFacebookAuthentication) {}
 
   async handle (httpRequest: any): Promise<HttpResponse> {
-    if (['', null, undefined].includes(httpRequest.token)) {
-      return {
-        statusCode: 400,
-        data: new Error('Token is required')
-      }
-    }
-    const result = await this.facebookAuthentication.perform({ token: httpRequest.token });
-
-    if (result instanceof AccessToken) {
-      return {
-        statusCode: 200,
-        data: {
-          accessToken: result.value
+    try {
+      if (['', null, undefined].includes(httpRequest.token)) {
+        return {
+          statusCode: 400,
+          data: new Error('Token is required')
         }
       }
-    } else {
+      const result = await this.facebookAuthentication.perform({ token: httpRequest.token });
+
+      if (result instanceof AccessToken) {
+        return {
+          statusCode: 200,
+          data: {
+            accessToken: result.value
+          }
+        }
+      } else {
+        return {
+          statusCode: 401,
+          data: result
+        }
+      }
+    } catch (error: any) {
       return {
-        statusCode: 401,
-        data: result
+        statusCode: 500,
+        data: new ServerError(error)
       }
     }
   }
@@ -101,6 +108,17 @@ describe('Facebook Login Controller', () => {
       data: {
         accessToken: 'any_value'
       }
+    })
+  });
+
+  it('should return 500 if facebook authentication throws', async () => {
+    const error = new Error('any_error');
+    facebookAuth.perform.mockRejectedValueOnce(new ServerError());
+    const response = await sut.handle({ token: 'any_token' });
+
+    expect(response).toEqual({
+      statusCode: 500,
+      data: new ServerError(error)
     })
   });
 });
