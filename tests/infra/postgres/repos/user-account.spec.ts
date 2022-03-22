@@ -57,6 +57,27 @@ describe('Postgres User Account Repository', () => {
       expect(account).toHaveProperty('email');
       expect(account?.id).toBe('1');
       expect(account?.email).toBe('existing_email');
+
+      await connection.close();
+    });
+
+    it('should return undefined if email does not exist', async () => {
+      const db = newDb();
+      const connection = await db.adapters.createTypeormConnection({
+        type: 'postgres',
+        entities: [PgUser]
+      });
+
+      // create schema
+      await connection.synchronize();
+      // const pgUserRepo = getRepository(PgUser);
+      // await pgUserRepo.save({ email: 'existing_email' });
+
+      const sut = new PostgresUserAccountRepository();
+      const account = await sut.load({ email: 'existing_email' });
+
+      expect(account).toBeUndefined();
+      await connection.close();
     });
   });
 });
