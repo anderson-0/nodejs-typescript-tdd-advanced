@@ -8,7 +8,7 @@ export class RequiredStringValidator {
 
   validate (): Error | undefined {
     if (['', null, undefined].includes(this.value)) {
-      return new RequiredFieldError('any_field');
+      return new RequiredFieldError(this.fieldName);
     }
   }
 }
