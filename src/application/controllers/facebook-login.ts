@@ -5,7 +5,7 @@ import { IFacebookAuthentication } from '@/domain/features';
 import { AccessToken } from '@/domain/models';
 
 type HttpRequest = {
-  token: string | undefined | null
+  token: string
 }
 
 type Model = Error | {
@@ -21,7 +21,7 @@ export class FacebookLoginController {
       if (error !== undefined) {
         return badRequest(error);
       }
-      const accessToken = await this.facebookAuthentication.perform({ token: httpRequest.token as string });
+      const accessToken = await this.facebookAuthentication.perform({ token: httpRequest.token });
 
       if (accessToken instanceof AccessToken) {
         return ok({
