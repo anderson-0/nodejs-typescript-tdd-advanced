@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended';
+import { mock, MockProxy } from 'jest-mock-extended';
 
 interface Validator {
   validate: () => Error | undefined
@@ -12,13 +12,20 @@ export class ValidationComposite {
 }
 
 describe('Validation Composite', () => {
-  it('should return undefined if all Validators return undefined', async () => {
-    const validator1 = mock<Validator>();
-    validator1.validate.mockReturnValue(undefined);
-    const validator2 = mock<Validator>();
-    validator2.validate.mockReturnValue(undefined);
-    const sut = new ValidationComposite([validator1, validator2]);
+  let sut: ValidationComposite;
+  let validator1: MockProxy<Validator>;
+  let validator2: MockProxy<Validator>;
+  let validators: Validator[];
 
+  beforeEach(() => {
+    validator1 = mock<Validator>();
+    validator2 = mock<Validator>();
+    validators = [validator1, validator2];
+    validator1.validate.mockReturnValue(undefined);
+    validator2.validate.mockReturnValue(undefined);
+    sut = new ValidationComposite(validators);
+  });
+  it('should return undefined if all Validators return undefined', async () => {
     const error = sut.validate();
 
     expect(error).toBeUndefined()
