@@ -6,9 +6,9 @@ import { AccessToken } from '@/domain/models';
 
 import { FacebookLoginController } from '@/application/controllers';
 import { ServerError, UnauthorizedError } from '@/application/errors';
-import { RequiredStringValidator } from '@/application/validations';
+import { RequiredStringValidator, ValidationComposite } from '@/application/validations';
 
-jest.mock('@/application/validations/require-string');
+jest.mock('@/application/validations/composite');
 
 describe('Facebook Login Controller', () => {
   let sut: FacebookLoginController;
@@ -28,18 +28,18 @@ describe('Facebook Login Controller', () => {
   it('should return 400 if token field validation fails', async () => {
     const error = new Error('validation_error');
 
-    // Mock the implementation of the validator to return an error
-    const requiredStringValidatorSpy = jest.fn().mockImplementationOnce(() => ({
+    // Mock the implementation of the validation composite to return an error
+    const validationCompositeSpy = jest.fn().mockImplementationOnce(() => ({
       validate: jest.fn().mockReturnValueOnce(error)
     }));
 
-    mocked(RequiredStringValidator).mockImplementationOnce(requiredStringValidatorSpy);
+    mocked(ValidationComposite).mockImplementationOnce(validationCompositeSpy);
 
     // Call the method to be tested any value. Since we are overwriting the implementation
     // the value does not matter
     const response = await sut.handle({ token });
 
-    expect(RequiredStringValidator).toHaveBeenLastCalledWith('any_token', 'token');
+    expect(ValidationComposite).toHaveBeenLastCalledWith([new RequiredStringValidator('any_token', 'token')]);
 
     expect(response).toEqual({
       statusCode: 400,
