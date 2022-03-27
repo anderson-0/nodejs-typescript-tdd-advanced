@@ -1,12 +1,11 @@
 import { mock, MockProxy } from 'jest-mock-extended';
-import { mocked } from 'jest-mock';
 import { AuthenticationError } from '@/domain/errors';
 import { IFacebookAuthentication } from '@/domain/features';
 import { AccessToken } from '@/domain/models';
 
 import { FacebookLoginController } from '@/application/controllers';
-import { ServerError, UnauthorizedError } from '@/application/errors';
-import { RequiredStringValidator, ValidationComposite } from '@/application/validations';
+import { UnauthorizedError } from '@/application/errors';
+import { RequiredStringValidator } from '@/application/validations';
 
 jest.mock('@/application/validations/composite');
 
@@ -25,26 +24,10 @@ describe('Facebook Login Controller', () => {
     sut = new FacebookLoginController(facebookAuth);
   });
 
-  it('should return 400 if token field validation fails', async () => {
-    const error = new Error('validation_error');
+  it('should build Validators correctly', async () => {
+    const validators = sut.buildValidators({ token });
 
-    // Mock the implementation of the validation composite to return an error
-    const validationCompositeSpy = jest.fn().mockImplementationOnce(() => ({
-      validate: jest.fn().mockReturnValueOnce(error)
-    }));
-
-    mocked(ValidationComposite).mockImplementationOnce(validationCompositeSpy);
-
-    // Call the method to be tested any value. Since we are overwriting the implementation
-    // the value does not matter
-    const response = await sut.handle({ token });
-
-    expect(ValidationComposite).toHaveBeenLastCalledWith([new RequiredStringValidator('any_token', 'token')]);
-
-    expect(response).toEqual({
-      statusCode: 400,
-      data: error
-    })
+    expect(validators).toEqual([new RequiredStringValidator('any_token', 'token')]);
   });
 
   it('should call FacebookLoginController with correct params', async () => {
@@ -72,17 +55,6 @@ describe('Facebook Login Controller', () => {
       data: {
         accessToken: 'any_value'
       }
-    })
-  });
-
-  it('should return 500 if facebook authentication throws', async () => {
-    const error = new Error('any_error');
-    facebookAuth.perform.mockRejectedValueOnce(new ServerError());
-    const response = await sut.handle({ token });
-
-    expect(response).toEqual({
-      statusCode: 500,
-      data: new ServerError(error)
     })
   });
 });
