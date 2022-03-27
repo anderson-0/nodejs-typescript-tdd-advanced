@@ -34,12 +34,5 @@ export class FacebookLoginController extends Controller {
     return [
       ...ValidationBuilder.of({ value: httpRequest.token, fieldName: 'token' }).required().build()
     ];
-
-    // const validators = ValidationBuilder
-    //   .of({ value: httpRequest.token, fieldName: 'token' })
-    //   .required()
-    //   .build();
-
-    // return new ValidationComposite(validators).validate();
   }
 }
