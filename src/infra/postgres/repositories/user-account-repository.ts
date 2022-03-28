@@ -6,10 +6,10 @@ import { PgUser } from '@/infra/postgres/entities';
 export class PostgresUserAccountRepository implements ISaveFacebookAccountRepository {
   private readonly pgUserRepo = getRepository(PgUser);
 
-  async load (params: ILoadUserAccountRepository.Params): Promise<ILoadUserAccountRepository.Result> {
+  async load ({ email }: ILoadUserAccountRepository.Params): Promise<ILoadUserAccountRepository.Result> {
     const pgUser = await this.pgUserRepo.findOne({
       where: {
-        email: params.email
+        email
       }
     });
 
@@ -20,27 +20,27 @@ export class PostgresUserAccountRepository implements ISaveFacebookAccountReposi
         email: pgUser.email
       };
     }
-
     return undefined;
   }
 
-  async saveWithFacebook (params: ISaveFacebookAccountRepository.Params): Promise<ISaveFacebookAccountRepository.Result> {
-    let id: string;
-    if (params.id === undefined) {
+  async saveWithFacebook ({ id, email, name, facebookId }: ISaveFacebookAccountRepository.Params): Promise<ISaveFacebookAccountRepository.Result> {
+    let resultId: string;
+    if (id === undefined) {
       const pgUser = await this.pgUserRepo.save({
-        email: params.email,
-        name: params.name,
-        facebookId: params.facebookId
-      })
-      id = pgUser.id.toString();
+        email,
+        name,
+        facebookId
+      });
+
+      resultId = pgUser.id.toString();
     } else {
       // updates should never change the email even if it is different
-      id = params.id;
-      await this.pgUserRepo.update(params.id, {
-        name: params.name,
-        facebookId: params.facebookId
+      resultId = id;
+      await this.pgUserRepo.update(id, {
+        name,
+        facebookId
       });
     }
-    return { id };
+    return { id: resultId };
   }
 }
