@@ -16,7 +16,7 @@
     "typeorm"
   ],
   "scripts": {
-    "start": "node dist/main/api",
+    "start": "node dist/main",
     "build": "rimraf dist && tsc -p tsconfig-build.json",
     "check": "npm-check -s -u",
     "lint": "eslint .",
