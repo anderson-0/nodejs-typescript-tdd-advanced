@@ -20,4 +20,10 @@ describe('Facebook API Integration Tests', () => {
       name: 'Test User'
     });
   });
+
+  it('should return undefined if token is invalid', async () => {
+    const facebookUser = await sut.loadUser({ token: 'invalid_token' });
+
+    expect(facebookUser).toBeUndefined();
+  });
 });
