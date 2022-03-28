@@ -55,4 +55,15 @@ describe('Facebook API', () => {
       email: 'any_facebook_email'
     });
   });
+
+  it('should return undefined if HttpGetClient throws', async () => {
+    // default (18-20) is to return { facebookId: 'any_facebook_id', name: 'any_facebook_name', email: 'any_facebook_email'}
+    // so we need to mock the rejected value
+    // but we need to execute mockReset() before to reset those 3 mocks defined in the beforeEach
+    httpClient.get.mockReset().mockRejectedValueOnce(new Error('any_facebook_error'))
+
+    const facebookUser = await sut.loadUser({ token: 'invalid_token' });
+
+    expect(facebookUser).toBeUndefined();
+  });
 });
