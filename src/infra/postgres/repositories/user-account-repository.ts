@@ -4,10 +4,9 @@ import { ILoadUserAccountRepository, ISaveFacebookAccountRepository } from '@/da
 import { PgUser } from '@/infra/postgres/entities';
 
 export class PostgresUserAccountRepository implements ISaveFacebookAccountRepository {
-  private readonly pgUserRepo = getRepository(PgUser);
-
   async load ({ email }: ILoadUserAccountRepository.Params): Promise<ILoadUserAccountRepository.Result> {
-    const pgUser = await this.pgUserRepo.findOne({
+    const pgUserRepo = getRepository(PgUser);
+    const pgUser = await pgUserRepo.findOne({
       where: {
         email
       }
@@ -24,9 +23,11 @@ export class PostgresUserAccountRepository implements ISaveFacebookAccountReposi
   }
 
   async saveWithFacebook ({ id, email, name, facebookId }: ISaveFacebookAccountRepository.Params): Promise<ISaveFacebookAccountRepository.Result> {
+    const pgUserRepo = getRepository(PgUser);
     let resultId: string;
+
     if (id === undefined) {
-      const pgUser = await this.pgUserRepo.save({
+      const pgUser = await pgUserRepo.save({
         email,
         name,
         facebookId
@@ -36,7 +37,7 @@ export class PostgresUserAccountRepository implements ISaveFacebookAccountReposi
     } else {
       // updates should never change the email even if it is different
       resultId = id;
-      await this.pgUserRepo.update(id, {
+      await pgUserRepo.update(id, {
         name,
         facebookId
       });
