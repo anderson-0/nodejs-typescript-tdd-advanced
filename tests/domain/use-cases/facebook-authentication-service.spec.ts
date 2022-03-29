@@ -3,7 +3,7 @@
 import { ILoadFacebookUserApi } from '@/domain/contracts/apis';
 import { ITokenGenerator } from '@/domain/contracts/crypto';
 import { ISaveFacebookAccountRepository, ILoadUserAccountRepository } from '@/domain/contracts/repositories/user-account-repository';
-import { FacebookAuthenticationService } from '@/domain/service';
+import { FacebookAuthenticationService } from '@/domain/use-cases';
 import { AuthenticationError } from '@/domain/entities/errors';
 import { AccessToken, FacebookAccount } from '@/domain/entities';
 
