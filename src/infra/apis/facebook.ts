@@ -1,4 +1,4 @@
-import { ILoadFacebookUserApi } from '@/data/contracts/apis';
+import { ILoadFacebookUserApi } from '@/domain/contracts/apis';
 import { IHttpGetClient } from '../http';
 
 type AppToken = {

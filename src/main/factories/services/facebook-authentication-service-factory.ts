@@ -1,6 +1,6 @@
 import { env } from '@/main/config/env';
 
-import { FacebookAuthenticationService } from '@/data/service';
+import { FacebookAuthenticationService } from '@/domain/service';
 
 import { JwtTokenGenerator } from '@/infra/crypto';
 import { PostgresUserAccountRepository } from '@/infra/postgres/repositories';

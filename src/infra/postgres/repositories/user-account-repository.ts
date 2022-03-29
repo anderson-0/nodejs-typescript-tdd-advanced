@@ -1,6 +1,6 @@
 import { getRepository } from 'typeorm';
 
-import { ILoadUserAccountRepository, ISaveFacebookAccountRepository } from '@/data/contracts/repositories';
+import { ILoadUserAccountRepository, ISaveFacebookAccountRepository } from '@/domain/contracts/repositories';
 import { PgUser } from '@/infra/postgres/entities';
 
 export class PostgresUserAccountRepository implements ISaveFacebookAccountRepository {

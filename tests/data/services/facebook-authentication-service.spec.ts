@@ -1,9 +1,9 @@
 /* eslint-disable prefer-const */
 
-import { ILoadFacebookUserApi } from '@/data/contracts/apis';
-import { ITokenGenerator } from '@/data/contracts/crypto';
-import { ISaveFacebookAccountRepository, ILoadUserAccountRepository } from '@/data/contracts/repositories/user-account-repository';
-import { FacebookAuthenticationService } from '@/data/service';
+import { ILoadFacebookUserApi } from '@/domain/contracts/apis';
+import { ITokenGenerator } from '@/domain/contracts/crypto';
+import { ISaveFacebookAccountRepository, ILoadUserAccountRepository } from '@/domain/contracts/repositories/user-account-repository';
+import { FacebookAuthenticationService } from '@/domain/service';
 import { AuthenticationError } from '@/domain/errors';
 import { AccessToken, FacebookAccount } from '@/domain/models';
 
