@@ -1,8 +1,8 @@
-import { AuthenticationError } from '@/domain/errors';
+import { AuthenticationError } from '@/domain/entities/errors';
 import { IFacebookAuthentication } from '@/domain/features';
 import { ILoadFacebookUserApi } from '@/domain/contracts/apis';
 import { ILoadUserAccountRepository, ISaveFacebookAccountRepository } from '@/domain/contracts/repositories';
-import { AccessToken, FacebookAccount } from '@/domain/models';
+import { AccessToken, FacebookAccount } from '@/domain/entities';
 import { ITokenGenerator } from '../contracts/crypto';
 
 export class FacebookAuthenticationService implements IFacebookAuthentication {

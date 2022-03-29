@@ -4,13 +4,13 @@ import { ILoadFacebookUserApi } from '@/domain/contracts/apis';
 import { ITokenGenerator } from '@/domain/contracts/crypto';
 import { ISaveFacebookAccountRepository, ILoadUserAccountRepository } from '@/domain/contracts/repositories/user-account-repository';
 import { FacebookAuthenticationService } from '@/domain/service';
-import { AuthenticationError } from '@/domain/errors';
-import { AccessToken, FacebookAccount } from '@/domain/models';
+import { AuthenticationError } from '@/domain/entities/errors';
+import { AccessToken, FacebookAccount } from '@/domain/entities';
 
 import { mock, MockProxy } from 'jest-mock-extended';
 import { mocked } from 'jest-mock';
 
-jest.mock('@/domain/models/facebook-account-model');
+jest.mock('@/domain/entities/facebook-account-model');
 
 describe('FacebookAuthenticationService', () => {
   let facebookApi: MockProxy<ILoadFacebookUserApi>;

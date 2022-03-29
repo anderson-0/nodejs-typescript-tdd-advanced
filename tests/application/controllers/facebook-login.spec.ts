@@ -1,7 +1,7 @@
 import { mock, MockProxy } from 'jest-mock-extended';
-import { AuthenticationError } from '@/domain/errors';
+import { AuthenticationError } from '@/domain/entities/errors';
 import { IFacebookAuthentication } from '@/domain/features';
-import { AccessToken } from '@/domain/models';
+import { AccessToken } from '@/domain/entities';
 
 import { FacebookLoginController } from '@/application/controllers';
 import { UnauthorizedError } from '@/application/errors';
