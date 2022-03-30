@@ -1,4 +1,4 @@
-import { adaptExpressRoute } from '@/infra/http';
+import { adaptExpressRoute } from '@/main/adapters';
 import { Router } from 'express';
 import { makeFacebookLoginController } from '@/main/factories/controllers';
 
