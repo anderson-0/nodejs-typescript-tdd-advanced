@@ -11,6 +11,9 @@ type Params = {
 type Result = AuthenticationError | AccessToken
 
 export type FacebookAuthentication = (params: Params) => Promise<Result>
+
+// Function that receives ILoadFacebookUserApi, ILoadUserAccountRepository & ISaveFacebookAccountRepository,
+// and ITokenGenerator and returns a function that receives a params and returns a Promise<Result>
 export const setupFacebookAuthentication = (
   loadFacebookUserApi: ILoadFacebookUserApi,
   loadUserAccountRepository: ILoadUserAccountRepository & ISaveFacebookAccountRepository,
