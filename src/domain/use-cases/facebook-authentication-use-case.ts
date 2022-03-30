@@ -4,13 +4,7 @@ import { ILoadUserAccountRepository, ISaveFacebookAccountRepository } from '@/do
 import { AccessToken, FacebookAccount } from '@/domain/entities';
 import { ITokenGenerator } from '../contracts/crypto';
 
-type Params = {
-  token: string
-}
-
-type Result = AuthenticationError | AccessToken
-
-export type FacebookAuthentication = (params: Params) => Promise<Result>
+export type FacebookAuthentication = (params: { token: string }) => Promise<{ accessToken: string}>
 
 // Function that receives ILoadFacebookUserApi, ILoadUserAccountRepository & ISaveFacebookAccountRepository,
 // and ITokenGenerator and returns a function that receives a params and returns a Promise<Result>
@@ -26,12 +20,12 @@ export const setupFacebookAuthentication = (
     const user = new FacebookAccount(facebookData, accountData);
 
     const { id } = await loadUserAccountRepository.saveWithFacebook(user);
-    const token = await crypto.generateToken({
+    const accessToken = await crypto.generateToken({
       key: id,
       expirationInMs: AccessToken.expirationInMs
     });
-    return new AccessToken(token);
+    return { accessToken }
   }
 
-  return new AuthenticationError();
+  throw new AuthenticationError();
 }
