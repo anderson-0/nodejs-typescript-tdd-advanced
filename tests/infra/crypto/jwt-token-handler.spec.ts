@@ -5,44 +5,60 @@ jest.mock('jsonwebtoken')
 
 describe('JWT Token Handler', () => {
   let sut: JwtTokenHandler;
-  const secret = 'any_secret';
+  let secret: string;
   let fakeJwt: jest.Mocked<typeof jwt>;
+
   beforeAll(() => {
+    secret = 'any_secret';
     fakeJwt = jwt as jest.Mocked<typeof jwt>;
-    fakeJwt.sign.mockImplementation(() => 'any_token');
   });
 
   beforeEach(() => {
     sut = new JwtTokenHandler(secret);
   });
-  it('should call sign with correct params', async () => {
-    await sut.generateToken({
-      key: 'any_key',
-      expirationInMs: 1000
+
+  describe('validateToken', () => {});
+
+  describe('generateToken', () => {
+    let key: string;
+    let token: string;
+    let expirationInMs: number;
+    beforeAll(() => {
+      key = 'any_key';
+      token = 'any_token';
+      expirationInMs = 1000;
+      fakeJwt.sign.mockImplementation(() => token);
     });
 
-    expect(fakeJwt.sign).toHaveBeenCalledWith({ key: 'any_key' }, secret, { expiresIn: 1 });
-  });
+    it('should call sign with correct params', async () => {
+      await sut.generateToken({
+        key,
+        expirationInMs: 1000
+      });
 
-  it('should return a jwt token on success', async () => {
-    const token = await sut.generateToken({
-      key: 'any_key',
-      expirationInMs: 1000
+      expect(fakeJwt.sign).toHaveBeenCalledWith({ key }, secret, { expiresIn: 1 });
     });
 
-    expect(token).toBe('any_token');
-  });
+    it('should return a jwt token on success', async () => {
+      const generatedToken = await sut.generateToken({
+        key,
+        expirationInMs
+      });
 
-  it('should rethrow if JwtTokenGenerator.sign throws', async () => {
-    fakeJwt.sign.mockImplementationOnce(() => {
-      throw new Error('http_error');
+      expect(generatedToken).toBe(token);
     });
 
-    const promise = sut.generateToken({
-      key: 'any_key',
-      expirationInMs: 1000
-    });
+    it('should rethrow if JwtTokenGenerator.sign throws', async () => {
+      fakeJwt.sign.mockImplementationOnce(() => {
+        throw new Error('http_error');
+      });
 
-    await expect(promise).rejects.toThrow(new Error('http_error'));
+      const promise = sut.generateToken({
+        key,
+        expirationInMs
+      });
+
+      await expect(promise).rejects.toThrow(new Error('http_error'));
+    });
   });
 });
