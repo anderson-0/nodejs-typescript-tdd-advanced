@@ -4,7 +4,9 @@ import { ILoadUserAccountRepository, ISaveFacebookAccountRepository } from '@/do
 import { AccessToken, FacebookAccount } from '@/domain/entities';
 import { ITokenGenerator } from '../contracts/crypto';
 
-export type FacebookAuthentication = (params: { token: string }) => Promise<{ accessToken: string}>
+type Input = { token: string }
+type Output = { accessToken: string }
+export type FacebookAuthentication = (params: Input) => Promise<Output>
 
 // Function that receives ILoadFacebookUserApi, ILoadUserAccountRepository & ISaveFacebookAccountRepository,
 // and ITokenGenerator and returns a function that receives a params and returns a Promise<Result>
