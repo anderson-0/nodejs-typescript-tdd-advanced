@@ -37,6 +37,24 @@ describe('JWT Token Handler', () => {
 
       expect(generatedKey).toBe(key);
     });
+
+    it('should rethrow if JwtTokenGenerator.verify throws', async () => {
+      fakeJwt.verify.mockImplementationOnce(() => {
+        throw new Error('http_error');
+      });
+
+      const promise = sut.validateToken({ token });
+
+      await expect(promise).rejects.toThrow(new Error('http_error'));
+    });
+
+    it('should throw if JwtTokenGenerator.verify returns null', async () => {
+      fakeJwt.verify.mockImplementationOnce(() => null);
+
+      const promise = sut.validateToken({ token });
+
+      await expect(promise).rejects.toThrow();
+    });
   });
 
   describe('generateToken', () => {
