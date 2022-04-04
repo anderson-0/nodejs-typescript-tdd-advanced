@@ -17,7 +17,27 @@ describe('JWT Token Handler', () => {
     sut = new JwtTokenHandler(secret);
   });
 
-  describe('validateToken', () => {});
+  describe('validateToken', () => {
+    let token: string;
+    let key: string;
+    beforeAll(() => {
+      token = 'any_token';
+      key = 'any_key';
+      fakeJwt.verify.mockImplementation(() => ({ key }));
+    });
+    it('should call validate with correct params', async () => {
+      await sut.validateToken({ token });
+
+      expect(fakeJwt.verify).toHaveBeenCalledWith(token, secret);
+      expect(fakeJwt.verify).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return the key used to sign the token', async () => {
+      const generatedKey = await sut.validateToken({ token });
+
+      expect(generatedKey).toBe(key);
+    });
+  });
 
   describe('generateToken', () => {
     let key: string;
@@ -36,6 +56,7 @@ describe('JWT Token Handler', () => {
         expirationInMs: 1000
       });
 
+      expect(fakeJwt.sign).toHaveBeenCalledTimes(1);
       expect(fakeJwt.sign).toHaveBeenCalledWith({ key }, secret, { expiresIn: 1 });
     });
 
