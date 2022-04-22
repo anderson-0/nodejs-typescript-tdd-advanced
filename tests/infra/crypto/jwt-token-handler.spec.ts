@@ -20,12 +20,13 @@ describe('JWT Token Handler', () => {
   describe('validateToken', () => {
     let token: string;
     let key: string;
+
     beforeAll(() => {
       token = 'any_token';
       key = 'any_key';
       fakeJwt.verify.mockImplementation(() => ({ key }));
     });
-    it('should call validate with correct params', async () => {
+    it('should call verify with correct params', async () => {
       await sut.validateToken({ token });
 
       expect(fakeJwt.verify).toHaveBeenCalledWith(token, secret);
@@ -61,6 +62,7 @@ describe('JWT Token Handler', () => {
     let key: string;
     let token: string;
     let expirationInMs: number;
+
     beforeAll(() => {
       key = 'any_key';
       token = 'any_token';
