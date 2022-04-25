@@ -10,12 +10,16 @@ describe('Express Router Adapter', () => {
   let next: NextFunction;
   let controller: MockProxy<Controller>;
   let sut: RequestHandler;
-  beforeEach(() => {
+
+  beforeAll(() => {
     res = getMockRes({ body: { any: 'any' } }).res;
     req = getMockReq({ body: { any: 'any' } });
     next = getMockRes().next;
     controller = mock<Controller>();
     controller.handle.mockResolvedValue({ statusCode: 200, data: { data: 'any_data' } });
+  });
+
+  beforeEach(() => {
     sut = adaptExpressRoute(controller);
   });
 
