@@ -1,12 +1,13 @@
+import { Request, Response, NextFunction, RequestHandler } from 'express';
+
 import { HttpResponse } from '@/application/helpers';
 import { getMockReq, getMockRes } from '@jest-mock/express';
-import { RequestHandler } from 'express';
-import { mock } from 'jest-mock-extended';
+import { mock, MockProxy } from 'jest-mock-extended';
 
 type Adapter = (middleware: IMiddleware) => RequestHandler;
 
 const adaptExpressMiddleware: Adapter = (middleware) => {
-  return async (req, res, next) => {
+  return async (req, _req, _next) => {
     await middleware.handle({ ...req.headers });
   };
 }
@@ -16,14 +17,25 @@ interface IMiddleware {
 }
 
 describe('Express Middleware', () => {
+  let req: Request
+  let res: Response;
+  let next: NextFunction;
+
+  let middleware: MockProxy<IMiddleware>;
+  let sut: RequestHandler;
+
+  beforeAll(() => {
+    req = getMockReq({ headers: { any: 'any' } });
+    res = getMockRes().res;
+    next = getMockRes().next;
+
+    middleware = mock<IMiddleware>();
+  });
+
+  beforeEach(() => {
+    sut = adaptExpressMiddleware(middleware);
+  });
   it('should call handle with correct request', async () => {
-    const req = getMockReq({ headers: { any: 'any' } });
-    const res = getMockRes().res;
-    const next = getMockRes().next;
-
-    const middleware = mock<IMiddleware>();
-    const sut = adaptExpressMiddleware(middleware);
-
     await sut(req, res, next);
 
     expect(middleware.handle).toHaveBeenCalledWith({ any: 'any' });
@@ -31,20 +43,16 @@ describe('Express Middleware', () => {
   });
 
   it('should call handle with empty request', async () => {
-    const req = getMockReq();
-    const res = getMockRes().res;
-    const next = getMockRes().next;
+    req = getMockReq();
+    res = getMockRes().res;
+    next = getMockRes().next;
 
-    const middleware = mock<IMiddleware>();
+    middleware = mock<IMiddleware>();
     const sut = adaptExpressMiddleware(middleware);
 
     await sut(req, res, next);
 
     expect(middleware.handle).toHaveBeenCalledWith({ });
     expect(middleware.handle).toHaveBeenCalledTimes(1);
-  });
-
-  it('', () => {
-
   });
 })
