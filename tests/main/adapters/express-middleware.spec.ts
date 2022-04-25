@@ -7,8 +7,9 @@ import { mock, MockProxy } from 'jest-mock-extended';
 type Adapter = (middleware: IMiddleware) => RequestHandler;
 
 const adaptExpressMiddleware: Adapter = (middleware) => {
-  return async (req, _req, _next) => {
-    await middleware.handle({ ...req.headers });
+  return async (req, res, _next) => {
+    const { statusCode, data } = await middleware.handle({ ...req.headers });
+    return res.status(statusCode).json(data);
   };
 }
 
@@ -30,6 +31,11 @@ describe('Express Middleware', () => {
     next = getMockRes().next;
 
     middleware = mock<IMiddleware>();
+
+    middleware.handle.mockResolvedValue({
+      statusCode: 500,
+      data: { error: 'any_error' }
+    });
   });
 
   beforeEach(() => {
@@ -47,12 +53,22 @@ describe('Express Middleware', () => {
     res = getMockRes().res;
     next = getMockRes().next;
 
-    middleware = mock<IMiddleware>();
     const sut = adaptExpressMiddleware(middleware);
 
     await sut(req, res, next);
 
     expect(middleware.handle).toHaveBeenCalledWith({ });
     expect(middleware.handle).toHaveBeenCalledTimes(1);
+  });
+
+  it('should respond with corret error and  ', async () => {
+    const sut = adaptExpressMiddleware(middleware);
+
+    await sut(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.json).toHaveBeenCalledWith({ error: 'any_error' });
+    expect(res.json).toHaveBeenCalledTimes(1);
   });
 })
