@@ -1,7 +1,7 @@
 import { ForbiddenError } from '@/application/errors';
 import { AuthenticationMiddleware } from '@/application/middlewares/authentication';
 
-describe('Authentication Middleware', () => {
+describe('AuthenticationMiddleware (Application Layer)', () => {
   let sut: AuthenticationMiddleware;
   let authorization: string;
   let authorize: jest.Mock;
