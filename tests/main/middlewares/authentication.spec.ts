@@ -4,7 +4,7 @@ import { ForbiddenError } from '@/application/errors';
 import { auth } from '@/main/middlewares';
 
 describe('Authentication Middleware (Main Layer)', () => {
-  it('should return 200 ', async () => {
+  it('should return 403 if authorization header is not provided ', async () => {
     app.get('/fake_route', auth, (req, res) => {
       res.json(req.locals);
     })
